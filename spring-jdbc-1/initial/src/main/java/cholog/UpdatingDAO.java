@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 @Repository
 public class UpdatingDAO {
@@ -33,25 +34,40 @@ public class UpdatingDAO {
      */
     public void insert(Customer customer) {
         //todo: customer를 디비에 저장하기
+
+        // ?는 바인딩할 값의 자리표시자
+        String sql = "INSERT INTO customers (first_name, last_name) VALUES (?, ?)";
+        jdbcTemplate.update(sql, customer.getFirstName(), customer.getLastName());
     }
+
     /**
      * public int update(String sql, @Nullable Object... args)
      */
     public int delete(Long id) {
         //todo: id에 해당하는 customer를 지우고, 해당 쿼리에 영향받는 row 수반환하기
-        return 0;
+
+        String sql = "DELETE FROM customers WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
     /**
      * public int update(final PreparedStatementCreator psc, final KeyHolder generatedKeyHolder)
      */
     public Long insertWithKeyHolder(Customer customer) {
-        String sql = "insert into customers (first_name, last_name) values (?, ?)";
+
+        String sql = "INSERT INTO customers (first_name, last_name) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         //todo : keyHolder에 대해 학습하고, Customer를 저장후 저장된 Customer의 id를 반환하기
+        jdbcTemplate.update(connection -> {
+            // 배열 대신 import java.sql.Statement;를 선언하여 Statement.RETURN_GENERATED_KEYS);를 사용할 수 있다
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, customer.getFirstName());
+            ps.setString(2, customer.getLastName());
+            return ps;
+        }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
         return keyHolder.getKey().longValue();
     }

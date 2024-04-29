@@ -26,10 +26,16 @@ public class QueryingDAO {
     /**
      * public <T> T queryForObject(String sql, Class<T> requiredType)
      */
+    /**
+     * Calculates the total number of customers in the database.
+     * @return The total number of rows in the 'customers' table.
+     */
+
     public int count() {
         String sql = "select count(*) from customers";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
+
 
     /**
      * public <T> T queryForObject(String sql, Class<T> requiredType, @Nullable Object... args)
