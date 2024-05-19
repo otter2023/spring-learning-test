@@ -26,6 +26,7 @@ public class EntityManagerTest {
         Customer customer = new Customer("Jack", "Bauer");
         entityManager.persist(customer);
 
+        // assertThat : 두 값을 비교하는 것뿐만 아니라, 값이 특정 조건이나 패턴을 만족하는지 확인하는 데 사용됨
         assertThat(entityManager.find(Customer.class, 1L)).isNotNull();
     }
 
